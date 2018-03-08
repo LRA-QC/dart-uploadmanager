@@ -24,7 +24,8 @@ String ProcessTVName(string name)
 {
   String newname;
   String pattern=r"(.*)\.S(\d\d)E(\d\d).*";
-  RegExp exp = new RegExp(pattern);
+  RegExp exp = new RegExp(pattern, caseSensitive:false);
+  
   Iterable<Match> matches =  exp.allMatches(name);
 
   if (matches.length>0)
@@ -33,7 +34,7 @@ String ProcessTVName(string name)
     if (  match.groupCount >= 3 )
     {
       newname = CleanName(match.group(1))+"/Season "+ CleanTVSeason(match.group(2));
-      //print ("[TV] Item name: [$name] Newname : [$newname]");
+      print ("[TV] Item name: [$name] Newname : [$newname]");
 
 
     }
@@ -44,21 +45,27 @@ String ProcessTVName(string name)
 ///PROCESS MOVIE NAME
 String ProcessMovieName(string name)
 {
-  String newname;
-  String pattern=r"(.*)\.(\d\d\d\d)\.(\d\d\d.*p)\.[A-Za-z](.*)";
-  RegExp exp = new RegExp(pattern);
+  String newname="";
+  //String pattern=r"(.*)\.(\d\d\d\d)\.(\d\d\d.*p)\.[A-Za-z](.*)";
+  String pattern=r"(.*)\.(\d\d\d\d)\.(.*)";
+  RegExp exp = new RegExp(pattern, caseSensitive:false);
   Iterable<Match> matches = exp.allMatches(name);
-//  print("Processing : $name ${matches.length}");
+  print("Processing : $name ${matches.length}");
   if (matches.length>0)
   {
     var match = matches.elementAt(0); // => extract the first (and only) match
     if (  match.groupCount >= 3 )
     {
       newname = CleanName(match.group(1))+" ("+match.group(2)+")";
-//      print ("[MOVIE] Item name: [$name] Newname : [$newname]");
+      print ("[MOVIE] Item name: [$name] Newname : [$newname]");
     }
   }
-//  print("newname $newname");
+  else
+  {
+     print("No match for pattern"); 
+     exit(1);
+  }
+  print("newname $newname");
   return newname;
 }
 
@@ -85,6 +92,7 @@ MoveFolder(String pathSource, String pathDestination)
       var f = new File(filename);
       if (f.existsSync()==false)
       {
+        print("Moving file: [$filename]\n");
         file.renameSync(filename);
       }
       else
